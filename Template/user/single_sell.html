@@ -1,0 +1,391 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<section class="page-search">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<!-- Advance Search -->
+				<div class="advance-search">
+					<form action="/AdSearch" method="get">
+						{% csrf_token %}
+						<div class="form-row">
+							<div class="form-group col-md-4">
+								<input type="text" required  name="search_item" class="form-control my-2 my-lg-1" id="items" placeholder="What are you looking for">
+							</div>
+							<div class="form-group col-md-3">
+								<select class="w-100 form-control mt-lg-1 mt-md-2" name="search_category">
+									<option  style="color:grey">Category</option>
+									{% for category_data in category_data %}
+									<option value="{{category_data.category_id}}" style="color:grey">{{category_data.category_name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group col-md-3">
+								<select class="w-100 form-control mt-lg-1 mt-md-2"  name="search_city">
+									<option  style="color:grey">Location</option>
+									{% for city_data in city_data %}
+									<option style="color:grey" value="{{city_data.city_id}}">{{city_data.city_name}}, {{city_data.fk_country.country_name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group col-md-2 align-self-center">
+								<button type="submit" style="border-color: white;" class="btn btn-primary">Search Now</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<!--===================================
+=            Store Section            =
+====================================-->
+<section class="section bg-gray">
+	<!-- Container Start -->
+	<div class="container">
+		<div class="row">
+			<!-- Left sidebar -->
+			<div class="col-md-8">
+				<div class="product-details">
+					<h1 class="product-title">{{item_data.item_title}}</h1>
+					<div class="product-meta">
+						<ul class="list-inline">
+							<li class="list-inline-item"><i class="fa fa-cube"></i> Ad #<a>{{item_data.item_code}}</a></li>
+							<li class="list-inline-item"><i class="fa fa-folder-open"></i> Category<a>{{item_data.fk_category.category_name}}</a></li>
+							<li class="list-inline-item"><i class="fa fa-location-arrow"></i> Location<a>{{item_data.fk_city.city_name}}, {{item_data.fk_city.fk_country.country_name}}</a></li>
+						</ul>
+					</div>
+					<br>
+					<!-- product slider -->
+					<!-- Container for the image gallery -->
+
+					<div class="col-md-12">
+					  <!-- Full-width images with number text -->
+						{% for item_images in item_data.item_images_set.all %}
+						<div class="mySlides">
+						  <img src="/{{item_images.item_img_name}}" style="width:100%">
+					  	</div>
+					    {% endfor %}
+
+					  <!-- Next and previous buttons -->
+					  <a class="prev" onclick="plusSlides(-1)"><i style="color:white" class="fas fa-less-than"></i></a>
+					  <a class="next" onclick="plusSlides(1)"><i style="color:white" class="fas fa-greater-than"></i></a>
+						<br>
+					  <!-- Thumbnail images -->
+					  <div class="row " style="padding-right:20px">
+						  <div class="scroll">
+						  {% for item_images in item_data.item_images_set.all %}
+						  		<img class="demo cursor" src="/{{item_images.item_img_name}}" height="100px" width="100px" onclick="currentSlide('{{forloop.counter}}')">
+						  {% endfor %}
+						  </div>
+
+					  </div>
+					</div>
+
+					<div class="content mt-5 pt-5">
+						<ul class="nav nav-pills  justify-content-center" id="pills-tab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home"
+								 aria-selected="true">Product Details</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact"
+								 aria-selected="false">Reviews</a>
+							</li>
+						</ul>
+						<div class="tab-content" id="pills-tabContent">
+							<div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+								<h3 class="tab-title">Product Description</h3>
+								<p>{{item_data.item_desp}}</p>
+							</div>
+							<div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+								<h3 class="tab-title">Product Review</h3>
+								<div class="product-review">
+									{% for item_comment in item_data.comment_set.all %}
+									<div class="media">
+										<!-- Avater -->
+										{% for user_profile in item_comment.fk_user.user_images_set.all %}
+										{% if forloop.counter == 1%}
+										<img src="/{{user_profile.user_img_name}}" alt="{{user_profile.user_img_name}}">
+										{% endif %}
+										{% empty %}
+										<img src="{% static '/images/user/user-thumb.png' %}" alt="" class="">
+										{% endfor %}
+										<div class="media-body">
+											<!-- Ratings -->
+											<div class="name">
+												<h5>{{item_comment.fk_user.user_name}}</h5>
+											</div>
+											<div class="date">
+												<p>{{item_comment.comment_date}}</p>
+											</div>
+											<div class="review-comment">
+												<p>{{item_comment.comment_body}}</p>
+											</div>
+										</div>
+										{% if AdminName %}
+										<div class="media d-flex justify-content-right align-items-center">
+											<form action="/Comment_del" method="post">
+												{% csrf_token %}
+												<input type="hidden" name="item_code" value="{{item_data.item_code}}">
+												<input type="hidden" name="comment_id" value="{{item_comment.comment_id}}">
+												<button type="submit" class="btn btn-danger">Delete</button>
+											</form>
+										</div>
+										{% endif %}
+									</div>
+									{% empty %}
+									<br>
+									<h6 align="center">No Reviews!</h6>
+									<br>
+									<br>
+									{% endfor %}
+
+									{% if UserName %}
+									<div class="review-submission">
+										<h3 class="tab-title">Submit your review</h3>
+										<!-- Rate -->
+										<div class="review-submit">
+											<form action="/Comment" method="post" class="row">
+												{% csrf_token %}
+												<input type="hidden" name="item_code" value="{{item_data.item_code}}">
+												<div class="col-12">
+													<textarea name="review" id="review" rows="2" class="form-control" placeholder="Comment"></textarea>
+												</div>
+												<div class="col-12">
+													<button type="submit" class="btn btn-main">Sumbit</button>
+												</div>
+											</form>
+										</div>
+									</div>
+									{% endif %}
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			{% if UserName != None or AdminName != None %}
+			<div class="col-md-4">
+				<div class="sidebar">
+					<div class="widget price text-center">
+						<h4>Price</h4>
+						<p>Rs.{{item_data.item_price}}</p>
+					</div>
+					<!-- User Profile widget -->
+					<div class="widget user text-center">
+						<div class="image d-flex justify-content-center">
+							{% for user_profile in item_data.fk_user.user_images_set.all %}
+							{% if forloop.counter == 1%}
+							<img src="/{{user_profile.user_img_name}}" alt="">
+							{% endif %}
+							{% empty %}
+							<img src="{% static '/images/user/user-thumb.png' %}" alt="">
+							{% endfor %}
+						</div>
+						<h4 style="margin-top:10px"><a>{{item_data.fk_user.user_name}}</a></h4>
+						<p class="member-time">Contact # {{item_data.item_user_contact}}</p>
+
+						<p class="member-time">Member Since {{item_data.item_add_date}}</p>
+
+
+						<ul class="list-inline mt-20">
+							<li class="list-inline-item">
+								<form action="https://api.whatsapp.com/send" method="get" target="_blank">
+									<input type="hidden" name="phone" value="92{{item_data.item_user_contact}}">
+									<input type="hidden" name="text" value="Hi {{item_data.fk_user.user_name}}! I am interested in your Ad. kindly tell me more about your product http://127.0.0.1:8000/Ad/{{item_data.item_code}}">
+									<button type="submit" class="btn d-inline-block  btn-success" style="color: white"><i class="fab fa-whatsapp" style="padding-right: 10px; font-size: 20px"></i> WhatsApp</button>
+								</form>
+<!--								<a href="" class="btn btn-contact d-inline-block  btn-primary px-lg-5 my-1 px-md-3">Contact</a>-->
+							</li>
+						</ul>
+					</div>
+
+					<div class="widget disclaimer">
+						<h5 class="widget-header">Address</h5>
+						<ul>
+							<li><i class="fas fa-map-marker-alt"></i> {{item_data.item_location}}</li>
+						</ul>
+					</div>
+
+					<!-- Safety tips widget -->
+					<div class="widget disclaimer">
+						<h5 class="widget-header">Safety Tips</h5>
+						<ul>
+							<li>i) Meet seller at a public place</li>
+							<li>ii) Check the item before you buy</li>
+							<li>iii) Pay only after collecting the item</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			{% else %}
+			<div class="col-md-4">
+				<div class="sidebar">
+					<div class="widget price text-center">
+						<h4>Price</h4>
+						<p>Rs.{{item_data.item_price}}</p>
+					</div>
+					<!-- User Profile widget -->
+					<div class="widget user text-center">
+						<div class="image d-flex justify-content-center">
+							<img src="{% static '/images/user/user-thumb.png' %}" alt="">
+						</div>
+						<h4 style="margin-top:10px"><a>{{item_data.fk_user.user_name}}</a></h4>
+						<ul class="list-inline mt-20">
+							<li class="list-inline-item">
+								<button type="button" class="btn btn-success" data-toggle="modal" data-target="#login" style="color: white"><i class="fab fa-whatsapp" style="padding-right: 10px; font-size: 20px"></i> WhatsApp</button>
+							</li>
+						</ul>
+					</div>
+<!--					login modal-->
+					<div class="modal fade" id="login" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+					  <div class="modal-dialog modal-dialog-centered" role="document">
+						<div class="modal-content">
+						  <div class="modal-header border-bottom-0">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							  <span aria-hidden="true">&times;</span>
+							</button>
+						  </div>
+						  <div class="modal-body text-center">
+							<img src="{% static 'images/account/Account1.png' %}" class="img-fluid mb-2" alt="">
+							<h6 class="py-2">For More Information</h6>
+							<p>You have to log into your account, if you not yet registerd go register yours-self it's free</p>
+						  </div>
+						  <div class="modal-footer border-top-0 mb-3 mx-5 justify-content-center">
+							<a href="/login" class="btn btn-primary">Login</a>
+							<a href="/register" class="btn btn-primary">Register</a>
+						  </div>
+						</div>
+					  </div>
+					</div>
+
+					<!-- Safety tips widget -->
+					<div class="widget disclaimer">
+						<h5 class="widget-header">Safety Tips</h5>
+						<ul>
+							<li>i) Meet seller at a public place</li>
+							<li>ii) Check the item before you buy</li>
+							<li>iii) Pay only after collecting the item</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+
+		</div>
+	</div>
+	<!-- Container End -->
+</section>
+<style>
+/* Position the image container (needed to position the left and right arrows) */
+.container {
+  position: relative;
+}
+
+/* Hide the images by default */
+.mySlides {
+  display: none;
+}
+
+/* Add a pointer when hovering over the thumbnail images */
+.cursor {
+  cursor: pointer;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 40%;
+  width: 35px;
+  height: 35px;
+  padding: 11px;
+  margin-top: -60px;
+  color: white;
+  font-weight: bold;
+  font-size: 11px;
+  user-select: none;
+  -webkit-user-select: none;
+  background-color: #025FD3;
+  border-radius: 20px;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+
+/* Add a transparency effect for thumnbail images */
+.demo {
+  opacity: 0.6;
+  margin-left:20px
+}
+
+.active,
+.demo:hover {
+  opacity: 1;
+}
+div.scroll {
+	overflow-x: auto;
+	overflow-y: hidden;
+	white-space: nowrap;
+}
+</style>
+<script>
+var slideIndex = 1;
+showSlides(slideIndex);
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("demo");
+  var captionText = document.getElementById("caption");
+  if (n > slides.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+    slides[i].style.display = "none";
+  }
+  for (i = 0; i < dots.length; i++) {
+    dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";
+  dots[slideIndex-1].className += " active";
+  captionText.innerHTML = dots[slideIndex-1].alt;
+}
+</script>
+
+<!-- auto complete search-->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+<script>
+    $(function () {
+        $("#items").autocomplete({
+            source: '/item_search',
+            minLength: 1
+        });
+    });
+</script>
+
+{% endblock content %}

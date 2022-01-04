@@ -1,0 +1,121 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<section class="login py-4 border-top-1">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 align-item-center">
+                {% if messages %}
+                    <br>
+                    {% for message in messages %}
+                      {% if message.tags == "error"%}
+                      <div class="alert alert-danger">
+                        <p style="text-align: center">{{message}}</p>
+                      </div>
+                      {% else %}
+                      <div class="alert alert-success">
+                        <p style="text-align: center">{{message}}</p>
+                      </div>
+                      {% endif %}
+                    {% endfor %}
+                    <br>
+                {% endif %}
+                <div class="border">
+                    <h3 class="bg-gray p-4">Register Now</h3>
+                    <form id="formAdd" action="/register_resp" method="post" autocomplete="off">
+                        {% csrf_token %}
+                        <fieldset class="p-4">
+                            <div class="row">
+                                <div class="inputBox col-lg-6">
+                                    <input type="text" maxlength="25" name="user_name" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" pattern="[A-Za-z]+">
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Username</label>
+                                </div>
+                                <div class="inputBox col-lg-6">
+                                    <input type="email" maxlength="30" name="user_email" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Email Address</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="inputBox col-lg-6">
+                                    <input type="password" maxlength="15" name="user_password" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" id="password">
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Password</label>
+                                </div>
+                                <div class="inputBox col-lg-6">
+                                    <input type="password" maxlength="15" name="user_confirm_password" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" id="confirm_password">
+                                     <p id='message' style="background: white; margin-top:-25px;"></p>
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Confirm Password</label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="inputBox col-lg-6">
+                                    <input type="text" name="user_phone" maxlength="12" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" id="phone" pattern="03[0-9]{2}-(?!1234567)(?!1111111)(?!7654321)[0-9]{7}">
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Phone(ex: 03XX-XXXXXXX)</label>
+                                </div>
+                                <div class="inputBox col-lg-6">
+                                    <input type="text" name="user_register_for" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+                                    <label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Register For</label>
+                                </div>
+                            </div>
+                             <div class="row">
+                                <div class="form-group col-lg-6">
+                                    <select name="user_country" style="color: rgb(52,58,64); font-size: 1rem" class="browser-default custom-select custom-select-lg" required>
+                                        <option value="" selected> -- Select Country -- </option>
+                                        {% for country_data in country_data %}
+                                        <option value="{{ country_data.country_name }}"> {{ country_data.country_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="inputBox col-lg-6">
+                                    <select name="user_city"  style="color: rgb(52,58,64); font-size: 1rem" class="browser-default custom-select custom-select-lg" required>
+                                        <option class="city" value="" selected>-- Select City --</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p class="mt-3 d-block">Already registered <a class="text-primary" href="/login">login here!</a></p>
+                            <br>
+                            <button type="submit" class="d-block py-3 px-4 bg-primary text-white border-0 rounded font-weight-bold">Register Now</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    $('#confirm_password').on('keyup', function () {
+        console.log('hello');
+      if ($('#password').val() == $('#confirm_password').val()) {
+        $('#message').html('Password Matched*').css('color', 'green');
+      } else
+        $('#message').html("Password doesn't matched*").css('color', 'red');
+    });
+
+   $("#formAdd select[name='user_country']").on('change', function()
+   {
+    var $this = $(this);
+    if($this.val() !=''){
+        $("#formAdd select[name='user_city']").find('.city').nextAll().remove();
+        $.ajax({
+            url: '/register/'+$this.val(),
+            type: 'GET',
+            success: function(resp){
+                let options = '';
+                resp.data.forEach(city => {
+                    options+='<option value='+city.city_name+'>'+city.city_name +'</option>';
+                });
+                $("#formAdd select[name='user_city']").find('.city').after(options);
+            },
+            error: function(resp){
+                console.log('Something went wrong');
+            }
+        });
+    }else{
+        $("#formAdd select[name='user_city']").find('.city').nextAll().remove();
+    }
+   });
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+{% endblock content %}

@@ -1,0 +1,77 @@
+{% extends 'user/dashboard.html' %}
+{% block sell %}
+{% load static %}
+      <div class="col-md-10 offset-md-1 col-lg-8 offset-lg-0">
+        <!-- Recently Favorited -->
+        <div class="widget dashboard-container my-adslist">
+          <h3 class="widget-header">My Ads</h3>
+          <table class="table table-responsive product-dashboard-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Product Title</th>
+                <th class="text-center">Category</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item_data in item_data %}
+              <tr>
+                <td class="product-thumb">
+                  {% for item_img in item_data.item_images_set.all%}
+                    {% if forloop.counter == 1 %}
+                  <img width="80px" height="auto" src="{{item_img.item_img_name}}" alt="{{item_img.item_img_name}}"></td>
+                    {% endif %}
+                  {% endfor %}
+                <td class="product-details">
+                  <a href="/Ad/{{item_data.item_code}}">
+                    <h3 class="title">{{item_data.item_title}}</h3>
+                    <span><strong>Posted on: </strong><time>{{item_data.item_add_date}}</time> </span>
+                    {% if item_data.item_status == 'Active'%}
+                      <span class="status active"><strong>Status</strong>{{item_data.item_status}}</span>
+                    {% else %}
+                        <span class="status" style="color: red"><strong>Status</strong>{{item_data.item_status}}</span>
+                    {% endif %}
+                    <span class="location"><strong>Location</strong>{{item_data.fk_city.city_name}}, {{item_data.fk_city.fk_country.country_name}}</span>
+                  </a>
+                </td>
+                <td class="product-category"><span class="categories">{{item_data.fk_category.category_name}}</span></td>
+                <td class="action" data-title="Action">
+                  <div class="">
+                    <ul class="list-inline justify-content-center">
+                      <li class="list-inline-item">
+                        {% if item_data.item_status == 'Active'%}
+                        <a data-toggle="tooltip" data-placement="top" title="Inactive" class="view" href="/AdChangeStatus/{{item_data.item_id}}">
+                          <i class="fa fa-eye-slash"></i>
+                        </a>
+                        {% else %}
+                        <a data-toggle="tooltip" data-placement="top" title="Active" class="view" href="/AdChangeStatus/{{item_data.item_id}}">
+                          <i class="fa fa-eye"></i>
+                        </a>
+                        {% endif %}
+                      </li>
+                      <li class="list-inline-item">
+                        <a class="edit" data-toggle="tooltip" data-placement="top" title="Edit" href="/AdEdit/{{item_data.item_code}}">
+                          <i class="fa fa-pencil"></i>
+                        </a>
+                      </li>
+                      <li class="list-inline-item">
+                        <a class="delete" data-toggle="tooltip" data-placement="top" title="Delete" href="/DelAd/{{item_data.item_code}}">
+                          <i class="fa fa-trash"></i>
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+              {% empty %}
+              <tr>
+                <td colspan="3"><p style="text-align: center;">404 Not Found</p></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+        </div>
+      </div>
+{% endblock sell %}

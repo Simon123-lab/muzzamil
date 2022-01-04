@@ -1,0 +1,119 @@
+{% extends 'admin/header-footer.html' %}
+{% block content %}
+{% load static %}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h4 class="m-0">&nbsp; &nbsp; Contact</h4>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <section class="col-lg-12 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">Contact-us List</h4>
+                    </div>
+                    <div class="card-body">
+                       {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "warning" %}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "info" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                            <div style="overflow-x:auto;">
+                                <center>
+                                    <table class="table" border="1">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label style="text-align:center">#</label>
+                                                </th>
+                                                 <th>
+                                                    <label style="text-align:center">NAME</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">EMAIL</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">MESSAGE</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">ACTIONS</label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for contact_data in contact_data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ contact_data.contact_uname }}</td>
+                                                <td>{{ contact_data.contact_uemail }}</td>
+                                                <td>{{ contact_data.contact_umessage }}</td>
+                                                <td>
+                                                    <div class="row">
+                                                    <span style="margin-right: 15px"></span>
+                                                        <form action="/admin/Contact_del" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" value="{{ contact_data.contact_id }}" name="contact_id">
+                                                            <input type="submit" value="Delete" class="btn btn-danger">
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </center>
+                            </div>
+                            <style>
+                        .dtHorizontalExampleWrapper {
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }
+
+                        #dtHorizontalExample th, td {
+                            white-space: nowrap;
+                        }
+
+                        table.dataTable thead .sorting:after,
+                        table.dataTable thead .sorting:before,
+                        table.dataTable thead .sorting_asc:after,
+                        table.dataTable thead .sorting_asc:before,
+                        table.dataTable thead .sorting_asc_disabled:after,
+                        table.dataTable thead .sorting_asc_disabled:before,
+                        table.dataTable thead .sorting_desc:after,
+                        table.dataTable thead .sorting_desc:before,
+                        table.dataTable thead .sorting_desc_disabled:after,
+                        table.dataTable thead .sorting_desc_disabled:before {
+                            bottom: .5em;
+                        }
+                    </style>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock content %}

@@ -1,0 +1,131 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<section class="page-search">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<!-- Advance Search -->
+				<div class="advance-search">
+					<form action="/AdSearch" method="get">
+						{% csrf_token %}
+						<div class="form-row">
+							<div class="form-group col-md-4">
+								<input type="text" required  name="search_item" class="form-control my-2 my-lg-1" id="items" placeholder="What are you looking for">
+							</div>
+							<div class="form-group col-md-3">
+								<select class="w-100 form-control mt-lg-1 mt-md-2" name="search_category">
+									<option  style="color:grey">Category</option>
+									{% for category_data in category_data %}
+									<option value="{{category_data.category_id}}" style="color:grey">{{category_data.category_name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group col-md-3">
+								<select class="w-100 form-control mt-lg-1 mt-md-2"  name="search_city">
+									<option  style="color:grey">Location</option>
+									{% for city_data in city_data %}
+									<option style="color:grey" value="{{city_data.city_id}}">{{city_data.city_name}}, {{city_data.fk_country.country_name}}</option>
+									{% endfor %}
+								</select>
+							</div>
+							<div class="form-group col-md-2 align-self-center">
+								<button type="submit" style="border-color: white;" class="btn btn-primary">Search Now</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<section class="section-sm">
+	<div class="container">
+		{% if search_item != None %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="search-result bg-gray">
+					<h2>Results For "{{search_item}}"</h2>
+					<p>{{search_count}} Results on {{search_date}}</p>
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		<div class="row">
+			<div class="col-lg-3 col-md-4">
+				<div class="category-sidebar">
+					<div class="widget category-list">
+                        <h4 class="widget-header">All Category</h4>
+                        <ul class="category-list">
+							{% for category_data in category_data %}
+                            <li><a>{{ category_data.category_name }} <span>{{category_data.item_set.all | length}}</span></a></li>
+							{% endfor %}
+                        </ul>
+                    </div>
+				</div>
+			</div>
+			<div class="col-lg-9 col-md-8">
+				<!-- ad listing list  -->
+				<div class="ad-listing-list mt-20">
+				{% for item_data in item_data %}
+                    <div class="row p-lg-3 p-sm-5 p-4">
+                        <div class="col-lg-4 align-self-center">
+                            <a href="/Ad/{{item_data.item_code}}">
+								{% for item_img in item_data.item_images_set.all%}
+								{% if forloop.counter == 1 %}
+                                <img src="{{item_img.item_img_name}}" class="img-fluid" alt="{{item_img.item_img_name}}">
+								{% endif %}
+								{% endfor %}
+                            </a>
+                        </div>
+                        <div class="col-lg-8">
+                            <div class="row">
+                                <div class="col-lg-6 col-md-10">
+                                    <div class="ad-listing-content">
+                                        <div>
+                                            <h3 class="font-weight-bold">Rs. {{item_data.item_price}}</h3>
+                                        </div>
+										<div style="margin-top:20px">
+											<h6 class="pr-5">{{item_data.item_title}}</h6>
+                                        </div>
+										<div style="margin-top:20px">
+											<ul class="list-inline mt-2 mb-3">
+												<li class="list-inline-item"><a style="color:grey"><i class="fa fa-folder-open"></i> {{item_data.fk_category.category_name}}</a></li>
+												<li class="list-inline-item"><p style="color:grey"><i class="fa fa-calendar"></i> {{item_data.item_add_date}}</p></li>
+                                        	</ul>
+										</div>
+                                    </div>
+                                </div>
+								<div class="col-lg-6">
+									<div class="float-lg-right">
+										<p class="pr-5"><i class="fa fa-map-marker-alt"></i> {{item_data.fk_city.city_name}}, {{item_data.fk_city.fk_country.country_name}}</p>
+									</div>
+								</div>
+                            </div>
+                        </div>
+                    </div>
+				{% empty %}
+              	<div class="ad-listing-list mt-20">
+					<p style="text-align: center;">404 Not Found</p>
+				</div>
+            	{% endfor %}
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+</section>
+<!-- auto complete search-->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+<script>
+    $(function () {
+        $("#items").autocomplete({
+            source: '/item_search',
+            minLength: 1
+        });
+    });
+</script>
+{% endblock content %}

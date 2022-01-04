@@ -1,0 +1,166 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<section class="bg-gray py-5" style="background: #F5F5F5">
+    <div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+              {% if message.tags == "error"%}
+              <div class="alert alert-danger">
+                <p style="text-align: center">{{message}}</p>
+              </div>
+              {% else %}
+              <div class="alert alert-success">
+                <p style="text-align: center">{{message}}</p>
+              </div>
+              {% endif %}
+            {% endfor %}
+            <br>
+        {% endif %}
+        <form action="/AddSell_resp" method="post" autocomplete="off" enctype="multipart/form-data">
+            {% csrf_token %}
+            <!-- Post Your ad start -->
+            <fieldset class="border border-gary p-4 mb-5">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>Post Your ad</h3>
+                    </div>
+                    <div class="col-lg-6">
+                        <h6 class="font-weight-bold pt-4 pb-1">Title Of Ad:</h6>
+                        <input type="text" maxlength="50" required name="item_title" class="border w-100 p-2 bg-white text-capitalize" placeholder="Ad title go There">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6 class="font-weight-bold pt-4 pb-1">Price:</h6>
+                                <input type="number" required name="item_price" class="border w-100 p-2 bg-white text-capitalize" placeholder="Price">
+                            </div>
+                            <div class="col-lg-6">
+                                <h6 class="font-weight-bold pt-4 pb-1">Condition:</h6>
+                                <input type="number" required name="item_condition" class="border w-100 p-2 bg-white text-capitalize" placeholder="1-10" min=1 max=10>
+                            </div>
+                        </div>
+                        <h6 class="font-weight-bold pt-4 pb-1">Description:</h6>
+                        <textarea name="item_description" required id="" class="border p-3 w-100" rows="7" placeholder="Write details about your product"></textarea>
+                    </div>
+                    <div class="col-lg-6">
+                        <h6 class="font-weight-bold pt-4 pb-1">Select Ad Category:</h6>
+                         <select name="item_category" style="border:black;" class="browser-default custom-select" required>
+                            <option value="" selected> -- Select Category -- </option>
+                            {% for category_data in category_data %}
+                            <option value="{{ category_data.category_name }}"> {{ category_data.category_name }} </option>
+                            {% endfor %}
+                        </select>
+                        <h6 class="font-weight-bold pt-4 pb-1">Pictures:</h6>
+                        <input type="file" name="item_images" class="border w-100 p-2 bg-white text-capitalize" placeholder="upload picture" id="files" multiple>
+                        <h6 class="font-weight-bold pt-4 pb-1" id="label-text"></h6>
+                        <style>
+                            input[type=file]::file-selector-button {
+                              border: 1px solid grey;
+                              padding: .2em .4em;
+                              background-color: white;
+                              transition: 1s;
+                            }
+
+                            input[type="file"] {
+                              display: block;
+                            }
+                            .imageThumb {
+                              max-height: 75px;
+                              padding: 1px;
+                              cursor: pointer;
+                            }
+                            .pip {
+                              display: inline-block;
+                              margin: 10px 10px 0 0;
+                              position: relative;
+                            }
+                            .remove {
+                                position: absolute;
+                                right: 2px;
+                                z-index: 100;
+                            }
+                            .img-wrap {
+                                position: relative;
+                            }
+                            .img-wrap .close {
+                                position: absolute;
+                                top: 2px;
+                                right: 2px;
+                                z-index: 100;
+                            }
+                        </style>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- Post Your ad end -->
+
+            <!-- seller-information start -->
+            <fieldset class="border p-4 my-5 seller-information bg-gray">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3>Seller Information</h3>
+                    </div>
+                    <div class="col-lg-4">
+                        <h6 class="font-weight-bold pt-4 pb-1">Contact Name:</h6>
+                        <input type="text"  value="{{UserName}}" class="border w-100 p-2" readonly required>
+                        <h6 class="font-weight-bold pt-4 pb-1">Contact Location:</h6>
+                        <select name="item_city" style="border:black;" class="browser-default custom-select" required>
+                            <option value="" selected> -- Select Location -- </option>
+                            {% for city_data in city_data %}
+                            <option value="{{ city_data.city_id }}"> {{city_data.city_name}}, {{city_data.fk_country.country_name}} </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-lg-8">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <h6 class="font-weight-bold pt-4 pb-1">Contact Email:</h6>
+                                <input type="email" value="{{UserEmail}}" class="border w-100 p-2" readonly required>
+                            </div>
+                            <div class="col-lg-6">
+                                <h6 class="font-weight-bold pt-4 pb-1">WhatsApp Number:</h6>
+                                <input type="text" maxlength="12" required name="item_contact_number" value="{{user_data.user_phone}}" class="border w-100 p-2" pattern="03[0-9]{2}-(?!1234567)(?!1111111)(?!7654321)[0-9]{7}">
+                            </div>
+                        </div>
+                        <h6 class="font-weight-bold pt-4 pb-1">Address:</h6>
+                        <input type="text" name="item_address" placeholder="Address" class="border w-100 p-2" required>
+                    </div>
+                </div>
+            </fieldset>
+            <!-- seller-information end-->
+
+            <!-- submit button -->
+            <button type="submit" class="btn btn-primary d-block mt-2">Post Your Ad</button>
+        </form>
+    </div>
+</section>
+<script>
+$(document).ready(function() {
+    if (window.File && window.FileList && window.FileReader) {
+      $("#files").on("change", function(e) {
+        var files = e.target.files,
+          filesLength = files.length;
+        for (var i = 0; i < filesLength; i++) {
+          $('#label-text').html('Image Preview')
+          var f = files[i]
+          var fileReader = new FileReader();
+          fileReader.onload = (function(e) {
+            var file = e.target;
+            $("<span class=\"pip\">" +
+              "<span class=\"remove\"><i class=\"fas  fa-times-circle\" style=\"color: white\"></i></span>" +
+              "<img height = 100px width= 100px class=\"imageThumb\" src=\"" + e.target.result + "\" title=\"" + file.name + "\"/>" +
+              "</span>").insertAfter("#label-text");
+            $(".remove").click(function(){
+              $(this).parent(".pip").remove();
+            });
+          });
+          fileReader.readAsDataURL(f);
+        }
+      });
+    } else {
+      alert("Your browser doesn't support to File API")
+    }
+    });
+</script>
+<!--<script src="{% static 'js/script.js' %}"></script>-->
+{% endblock content %}

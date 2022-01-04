@@ -1,0 +1,79 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<section class="page-title">
+	<!-- Container Start -->
+	<div class="container">
+        {% if messages %}
+            <br>
+            {% for message in messages %}
+              {% if message.tags == "error"%}
+              <div class="alert alert-danger">
+                <p style="text-align: center">{{message}}</p>
+              </div>
+              {% else %}
+              <div class="alert alert-success">
+                <p style="text-align: center">{{message}}</p>
+              </div>
+              {% endif %}
+            {% endfor %}
+            <br>
+        {% endif %}
+		<div class="row">
+			<div class="col-md-8 offset-md-2 text-center">
+				<!-- Title text -->
+				<h3>Contact Us</h3>
+			</div>
+		</div>
+	</div>
+	<!-- Container End -->
+</section>
+<!-- page title -->
+
+<!-- contact us start-->
+<section class="section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="contact-us-content p-4">
+                    <h5>Contact Us</h5>
+                    <h1 class="pt-3">Hello, what's on your mind?</h1>
+                    <p class="pt-3 pb-5">If you have any problem feel free to ask us, we will here to helps you</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                    <form action="/Contact_resp" method="post">
+                        {% csrf_token %}
+                        <fieldset class="p-4">
+                            <div class="form-group">
+                                {% if UserName %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <input type="text" name="username" value="{{UserName}}" placeholder="Name *" class="form-control" required readonly style="background: white">
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input type="email" name="useremail" value="{{UserEmail}}" placeholder="Email *" class="form-control" required readonly style="background: white">
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <input type="text" name="username" placeholder="Name *" class="form-control" required>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <input type="email" name="useremail" placeholder="Email *" class="form-control" required>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <textarea name="message" id=""  placeholder="Message *" class="border w-100 p-3mt-lg-4" required></textarea>
+                            <div class="btn-grounp">
+                                <button type="submit" class="btn btn-primary mt-2 float-right">SUBMIT</button>
+                            </div>
+                        </fieldset>
+                    </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock content %}

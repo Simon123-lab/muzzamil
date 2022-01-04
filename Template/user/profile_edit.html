@@ -1,0 +1,195 @@
+{% extends 'user/header-footer.html' %}
+{% block content %}
+{% load static %}
+<script src="{% static 'js/script.js' %}"></script>
+<section class="user-profile section">
+	<div class="container">
+		{% if messages %}
+			<br>
+			{% for message in messages %}
+			  {% if message.tags == "error"%}
+			  <div class="alert alert-danger">
+				<p style="text-align: center">{{message}}</p>
+			  </div>
+			  {% endif %}
+			  {% if message.tags == "success" %}
+			  <div class="alert alert-success">
+				<p style="text-align: center">{{message}}</p>
+			  </div>
+			  {% endif %}
+			{% endfor %}
+			<br>
+		{% endif %}
+		<div class="row">
+			<div class="col-md-10 offset-md-1 col-lg-3 offset-lg-0">
+				<div class="sidebar">
+					<!-- User Widget -->
+					<div class="widget user user-dashboard-profile">
+						<!-- User Image -->
+						<div class="image d-flex justify-content-center">
+							{% for user_image in user_data.user_images_set.all %}
+							{% if forloop.counter == 1 %}
+							<img src="/{{user_image.user_img_name}}" alt="" class="">
+							{% endif %}
+							{% empty %}
+							<img src="{% static '/images/user/user-thumb.png' %}" alt="" class="">
+							{% endfor %}
+						</div>
+						<!-- User Name -->
+						<h5 class="text-center">{{UserName}}</h5>
+						<form action="/UploadProfilePicture" method="post" enctype="multipart/form-data">
+						  {% csrf_token %}
+						  <input type="file" name="imageUpload" id="imageUpload" class="hide" onchange="form.submit()" />
+						  <label for="imageUpload" class="btn btn-main-sm">Upload New Profile</label>
+						</form>
+						<style>
+							.hide {
+								display: none;
+						  	}
+						</style>
+					</div>
+					<div class="widget dashboard-links">
+						<ul>
+							<li><a class="my-1 d-inline-block" href="/"><span>Home</span></a></li>
+							<li><a class="my-1 d-inline-block" href=""><span>About Us</span></a></li>
+							<li><a class="my-1 d-inline-block" href=""><span>Contact Us</span></a></li>
+							<li><a class="my-1 d-inline-block" href="/Dashboard"><span>Dashboard</span></a></li>
+							<li><a class="my-1 d-inline-block" href="/logout"><span>Logout</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10 offset-md-1 col-lg-9 offset-lg-0">
+				<!-- Edit Profile Welcome Text -->
+				<div class="widget welcome-message">
+					<h2>Edit profile</h2>
+				</div>
+				<!-- Edit Personal Info -->
+				<div class="row">
+					<div class="col-lg-6 col-md-6">
+						<div class="widget personal-info">
+							<h3 class="widget-header user">Edit Personal Information</h3>
+                    		<form id="formAdd" action="/EditProfile_resp" method="post" autocomplete="off">
+								{% csrf_token %}
+								<br>
+								<input type="hidden" name="user_id" value="{{user_data.user_id}}" required>
+								<input type="hidden" name="user_password" value="{{user_data.user_pass}}" required>
+								<input type="hidden" name="user_new_password" value="0">
+								<input type="hidden" name="user_new_confirm_password" value="0">
+
+								<fieldset class="">
+									<div class="inputBox">
+										<input type="text" maxlength="25" name="user_name" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="{{user_data.user_name}}" pattern="[A-Za-z]+">
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Username</label>
+									</div>
+									<div class="inputBox">
+										<input type="text" style="background: white;" maxlength="30" name="user_email" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="{{user_data.user_email}}" readonly>
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Email Address</label>
+									</div>
+									<div class="inputBox">
+										<input type="text" name="user_phone" maxlength="12" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="{{user_data.user_phone}}" id="phone" pattern="03[0-9]{2}-(?!1234567)(?!1111111)(?!7654321)[0-9]{7}">
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Phone(ex: 03XX-XXXXXXX)</label>
+									</div>
+									<div class="inputBox">
+										<input type="text" name="user_register_for" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="{{user_data.user_mode}}">
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Register For</label>
+									</div>
+
+									<div class="form-group">
+										<select name="user_country" style="color: rgb(52,58,64); font-size: 1rem" class="browser-default custom-select custom-select-lg" required>
+											{% for user_city in user_data.user_city_set.all %}
+											<option value="{{user_city.fk_country.country_name}}" selected>{{user_city.fk_country.country_name}} -> Selected </option>
+											{% endfor %}
+											{% for country_data in country_data %}
+											<option value="{{ country_data.country_name }}"> {{ country_data.country_name }} </option>
+											{% endfor %}
+										</select>
+									</div>
+
+									<div class="inputBox">
+										<select name="user_city"  style="color: rgb(52,58,64); font-size: 1rem" class="browser-default custom-select custom-select-lg" required>
+											{% for user_city in user_data.user_city_set.all %}
+											<option class="city" value="{{user_city.fk_city.city_name}}" selected>{{user_city.fk_city.city_name}} -> Selected </option>
+											{% endfor %}
+										</select>
+									</div>
+
+									<br>
+									<button type="submit" class="d-block py-3 px-4 bg-primary text-white border-0 rounded font-weight-bold">Save Changes</button>
+								</fieldset>
+							</form>
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6">
+						<!-- Change Password -->
+					<div class="widget change-password">
+						<h3 class="widget-header user">Edit Password</h3>
+                    		<form id="formAdd" action="/EditProfile_resp" method="post" autocomplete="off">
+								{% csrf_token %}
+								<input type="hidden" name="user_id" value="{{user_data.user_id}}">
+								<input type="hidden" name="user_name" value="{{user_data.user_name}}">
+								<input type="hidden" name="user_email" value="{{user_data.user_email}}">
+								<input type="hidden" name="user_phone" value="{{user_data.user_phone}}">
+								<input type="hidden" name="user_register_for" value="{{user_data.user_mode}}">
+
+								<br>
+								<fieldset class="">
+									<div class="inputBox">
+										<input type="password" maxlength="15" name="user_password" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">Old Password</label>
+									</div>
+									<div class="inputBox ">
+										<input type="password" maxlength="15" name="user_new_password" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" id="password">
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">New Password</label>
+									</div>
+									<div class="inputBox">
+										<input type="password" maxlength="15" name="user_new_confirm_password" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="" id="confirm_password">
+										 <p id='message' style="background: white; margin-top:-25px;"></p>
+										<label style="background-color: white; margin-left:15px; margin-top:4px; height:6px;">New Confirm Password</label>
+									</div>
+									<br>
+									<button type="submit" class="d-block py-3 px-4 bg-primary text-white border-0 rounded font-weight-bold">Change Password</button>
+								</fieldset>
+							</form>
+					</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+<script>
+
+    $('#confirm_password').on('keyup', function () {
+        console.log('hello');
+      if ($('#password').val() == $('#confirm_password').val()) {
+        $('#message').html('Password Matched*').css('color', 'green');
+      } else
+        $('#message').html("Password doesn't matched*").css('color', 'red');
+    });
+
+   $("#formAdd select[name='user_country']").on('change', function()
+   {
+    var $this = $(this);
+    if($this.val() !=''){
+        $("#formAdd select[name='user_city']").find('.city').nextAll().remove();
+        $.ajax({
+            url: '/register/'+$this.val(),
+            type: 'GET',
+            success: function(resp){
+                let options = '';
+                resp.data.forEach(city => {
+                    options+='<option value='+city.city_name+'>'+city.city_name +'</option>';
+                });
+                $("#formAdd select[name='user_city']").find('.city').after(options);
+            },
+            error: function(resp){
+                console.log('Something went wrong');
+            }
+        });
+    }else{
+        $("#formAdd select[name='user_city']").find('.city').nextAll().remove();
+    }
+   });
+</script>
+{% endblock content %}

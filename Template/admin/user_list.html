@@ -1,0 +1,159 @@
+{% extends 'admin/header-footer.html' %}
+{% block content %}
+{% load static %}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h4 class="m-0">&nbsp; &nbsp; USER</h4>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <section class="col-lg-12 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">USER LIST</h4>
+                        <br>
+                        <br>
+                        <form method="get" action="/admin/user_search">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <input type="text" name="email" placeholder="Enter Email" class="form-control">
+                                </div>
+                                 <div class="col-lg-2">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body">
+                       {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "warning" %}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "info" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                            <div style="overflow-x:auto;">
+                                <center>
+                                    <table class="table" border="1">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label style="text-align:center">#</label>
+                                                </th>
+                                                 <th>
+                                                    <label style="text-align:center">PICTIRE</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">USERNAME</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">EMAIL</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">PHONE</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">COUNTRY</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">CITY</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">REGISTER FOR</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">REGISTRATION DATE</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">ACTIONS</label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for user_data in user_data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>
+                                                {% for user_picture in user_data.user_images_set.all %}
+                                                    <img src="/{{user_picture.user_img_name}}" alt="/{{user_picture.user_img_name}}" width="60px" height="60px"/>
+                                                {% empty%}
+                                                    <img src="{% static '/images/user/user-thumb.png' %}" alt="{% static '/images/user/user-thumb.png' %}" width="50px" height="50px"/>
+                                                {% endfor%}
+                                                </td>
+                                                <td>{{ user_data.user_name }}</td>
+                                                <td>{{ user_data.user_email }}</td>
+                                                <td>{{ user_data.user_phone }}</td>
+                                                {% for user_city in user_data.user_city_set.all %}
+                                                <td>{{ user_city.fk_country.country_name }}</td>
+                                                <td>{{ user_city.fk_city.city_name }}</td>
+                                                {% endfor %}
+                                                <td>{{ user_data.user_mode }}</td>
+                                                <td>{{ user_data.user_reg_date }}</td>
+                                                <td>
+                                                    <div class="row">
+                                                    <span style="margin-right: 15px"></span>
+                                                        <form action="/admin/EditUser" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" value="{{ user_data.user_id }}" name="user_id">
+                                                            <input type="submit" value="EDIT" class="btn btn-success">
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </center>
+                            </div>
+                            <style>
+                        .dtHorizontalExampleWrapper {
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }
+
+                        #dtHorizontalExample th, td {
+                            white-space: nowrap;
+                        }
+
+                        table.dataTable thead .sorting:after,
+                        table.dataTable thead .sorting:before,
+                        table.dataTable thead .sorting_asc:after,
+                        table.dataTable thead .sorting_asc:before,
+                        table.dataTable thead .sorting_asc_disabled:after,
+                        table.dataTable thead .sorting_asc_disabled:before,
+                        table.dataTable thead .sorting_desc:after,
+                        table.dataTable thead .sorting_desc:before,
+                        table.dataTable thead .sorting_desc_disabled:after,
+                        table.dataTable thead .sorting_desc_disabled:before {
+                            bottom: .5em;
+                        }
+                    </style>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock content %}

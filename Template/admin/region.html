@@ -1,0 +1,221 @@
+{% extends 'admin/header-footer.html' %}
+{% block content %}
+{% load static %}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h4 class="m-0">&nbsp; &nbsp; REGIONS</h4>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">ADD COUNTRY</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "error"%}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "success" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                           <form action="/admin/country" method="post" enctype="multipart/form-data" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <div class="inputBox">
+                                    <input type="text" maxlength="35" name="country_name" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+                                    <label>Enter Country</label>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <center>
+                                <input type="submit" value="Submit" class="btn btn-primary">
+                                </center>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <!-- /.card-body-->
+                    <div class="card-footer bg-transparent">
+                    <!-- /.row -->
+                    </div>
+                </div>
+            </section>
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">ADD CITY</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "warning"%}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "info" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                           <form action="/admin/city" method="post" enctype="multipart/form-data" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                 <div class="inputBox">
+                                    <input type="text" maxlength="35" name="city_name" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+                                    <label>Enter City</label>
+                                </div>
+                                <div class="form-group">
+                                    <select name="country_city_name" class="form-control" required>
+                                        <option style="color:#D3D3D3;" selected value=""> -- Select Country -- </option>
+                                        {% for country_data in country_data %}
+                                        <option style="color:#D3D3D3;" value="{{ country_data.country_name }}"> {{ country_data.country_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <center>
+                                <input type="submit" value="Submit" name="btn_cat" class="btn btn-primary">
+                                </center>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <!-- /.card-body-->
+                    <div class="card-footer bg-transparent">
+                    <!-- /.row -->
+                    </div>
+                </div>
+            </section>
+        </div>
+        <section class="col-lg-12 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">REGIONS DETAILS</h4>
+                        <br>
+                        <br>
+                        <form method="get" action="/admin/country_search">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <input type="text" name="country" placeholder="Enter Country" class="form-control">
+                                </div>
+                                 <div class="col-lg-2">
+                                    <button type="submit" class="btn btn-primary">Search</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body">
+                        <div id="world-map">
+                            <div style="overflow-x:auto;">
+                                <center>
+                                    <table class="table" border="1">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label style="text-align:center">#</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">COUNTRIES</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">CITIES</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">ACTIONS</label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for country_data in country_data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ country_data.country_name }}</td>
+                                                <td class="col-lg-6">
+                                                    <div class="row" >
+                                                        {% for city_data in country_data.city_set.all %}
+                                                        <form action="/admin/city_del" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="city_id" value="{{ city_data.city_id }}">
+                                                            <button type="submit" class="btn btn-secondary btn-xs">  {{ city_data.city_name }} &nbsp;<i class="fas fa-times-circle"></i></button>
+                                                        </form>&nbsp; &nbsp;
+                                                        {% endfor%}
+                                                    </div>&nbsp;
+                                                </td>
+                                                <td>
+                                                    <form action="/admin/country_del" method="post">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" value="{{ country_data.country_id }}" name="country_id">
+                                                        <input type="submit" value="Remove" class="btn btn-danger">
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </center>
+                            </div>
+                            <style>
+                        .dtHorizontalExampleWrapper {
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }
+
+                        #dtHorizontalExample th, td {
+                            white-space: nowrap;
+                        }
+
+                        table.dataTable thead .sorting:after,
+                        table.dataTable thead .sorting:before,
+                        table.dataTable thead .sorting_asc:after,
+                        table.dataTable thead .sorting_asc:before,
+                        table.dataTable thead .sorting_asc_disabled:after,
+                        table.dataTable thead .sorting_asc_disabled:before,
+                        table.dataTable thead .sorting_desc:after,
+                        table.dataTable thead .sorting_desc:before,
+                        table.dataTable thead .sorting_desc_disabled:after,
+                        table.dataTable thead .sorting_desc_disabled:before {
+                            bottom: .5em;
+                        }
+                    </style>
+                        </div>
+                    </div>
+                </div>
+            </section>
+    </div><!-- /.container-fluid -->
+</section>
+
+
+
+<!-- /.content -->
+{% endblock content %}

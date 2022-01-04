@@ -1,0 +1,157 @@
+{% extends 'admin/header-footer.html' %}
+{% block content %}
+{% load static %}
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <h4 class="m-0">&nbsp; &nbsp; CATEGORY</h4>
+        </div><!-- /.col -->
+    </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">ADD CATEGORY</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "error"%}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "success" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                           <form action="/admin/category_add" method="post" enctype="multipart/form-data" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                 <div class="inputBox">
+                                    <input type="text" maxlength="30" name="category" required class="form-control form-control-lg" onkeyup="this.setAttribute('value', this.value);"  value="">
+                                    <label>Enter Category</label>
+                                 </div>
+                            </div>
+                            <!-- /.card-body -->
+                            <div class="card-footer">
+                                <center>
+                                <input type="submit" value="Submit" name="btn_cat" class="btn btn-primary">
+                                </center>
+                            </div>
+                        </form>
+                        </div>
+                    </div>
+                    <!-- /.card-body-->
+                    <div class="card-footer bg-transparent">
+                    <!-- /.row -->
+                    </div>
+                </div>
+            </section>
+            <section class="col-lg-6 connectedSortable">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">CATEGORY LIST</h4>
+                    </div>
+                    <div class="card-body">
+                       {% if messages %}
+                            <br>
+                            {% for message in messages %}
+                              {% if message.tags == "warning" %}
+                              <div class="alert alert-danger">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                              {% if message.tags == "info" %}
+                              <div class="alert alert-success">
+                                <p style="text-align: center">{{message}}</p>
+                              </div>
+                              {% endif %}
+                            {% endfor %}
+                            <br>
+                        {% endif %}
+                        <div id="world-map">
+                            <div style="overflow-x:auto;">
+                                <center>
+                                    <table class="table" border="1">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label style="text-align:center">#</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">CATEGORY</label>
+                                                </th>
+                                                <th>
+                                                    <label style="text-align:center">ACTIONS</label>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for category_data in category_data %}
+                                            <tr>
+                                                <td>{{ forloop.counter }}</td>
+                                                <td>{{ category_data.category_name }}</td>
+                                                <td>
+                                                    <div class="row">
+                                                    <span style="margin-right: 20px"></span>
+                                                        <form action="/admin/category_del" method="post">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" value="{{ category_data.category_id }}" name="category_id">
+                                                            <input type="submit" value="Remove" class="btn btn-danger">
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </center>
+                            </div>
+                            <style>
+                        .dtHorizontalExampleWrapper {
+                            max-width: 600px;
+                            margin: 0 auto;
+                        }
+
+                        #dtHorizontalExample th, td {
+                            white-space: nowrap;
+                        }
+
+                        table.dataTable thead .sorting:after,
+                        table.dataTable thead .sorting:before,
+                        table.dataTable thead .sorting_asc:after,
+                        table.dataTable thead .sorting_asc:before,
+                        table.dataTable thead .sorting_asc_disabled:after,
+                        table.dataTable thead .sorting_asc_disabled:before,
+                        table.dataTable thead .sorting_desc:after,
+                        table.dataTable thead .sorting_desc:before,
+                        table.dataTable thead .sorting_desc_disabled:after,
+                        table.dataTable thead .sorting_desc_disabled:before {
+                            bottom: .5em;
+                        }
+                    </style>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+{% endblock content %}
