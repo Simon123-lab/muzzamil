@@ -29,7 +29,7 @@ EMAIL_HOST_PASSWORD = 'mojee7800'
 SECRET_KEY = 'django-insecure-6)c9brid8&l%lad)-&^p@_nk907uxf-wgxxr9n%91pd__v3d*s'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1','pythonproject321.herokuapp.com']
 
